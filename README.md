@@ -7,7 +7,7 @@ Try running some of the following tasks:
 Create and fill env file
 
 ```shell
-cp env.example env.
+cp .env.example .env
 npx hardhat test
 npx hardhat run scripts/deploy.ts --network mumbai
 ```
