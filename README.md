@@ -9,5 +9,5 @@ Create and fill env file
 ```shell
 cp .env.example .env
 npx hardhat test
-npx hardhat run scripts/deploy.ts --network mumbai
+npx hardhat run scripts/WhitelistDeploy.ts --network mumbai
 ```
