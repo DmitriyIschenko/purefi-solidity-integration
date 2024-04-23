@@ -8,7 +8,7 @@ contract IntegratedWhitelist is PureFiContext, AccessControlEnumerableUpgradeabl
     bytes32 public WHITELIST_ROLE;
 
     function initialize() public initializer {
-        address verifier = 0x6ae5e97F3954F64606A898166a294B3d54830979;
+        address verifier = 0xd1F404230cB1C8ffaA31d480C81D7e5348dA13e4;
         WHITELIST_ROLE = keccak256("WHITELIST_ROLE");
         __PureFiContext_init_unchained(verifier);
         __AccessControl_init_unchained();

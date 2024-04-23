@@ -6,26 +6,39 @@ import "./PureFi/PureFiContext.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 
-contract UFIBuyerMumbaiKYC1 is PureFiContext, OwnableUpgradeable, ReentrancyGuard {
+contract UFIBuyerKYC1 is PureFiContext, OwnableUpgradeable, ReentrancyGuard {
     ERC20Upgradeable public ufi;
     uint public ruleID;
+    uint public exchangeRate;
+    uint public denominator;
 
 
-    function initialize() external initializer {
-        ufi = ERC20Upgradeable(0x70892902C0BfFdEEAac711ec48F14c00b0fa7E3A);
-        address verifier = 0x6ae5e97F3954F64606A898166a294B3d54830979;
+    function initialize(address token, address verifier) external initializer {
+        ufi = ERC20Upgradeable(token);
         __Ownable_init();
         __PureFiContext_init_unchained(verifier);
+        exchangeRate = 1_000_000;
+        denominator = 1_000_0;
     }
 
 
-     function version() public pure returns(uint32){
+    function setDenominator(uint newDenominator) external onlyOwner {
+        denominator = newDenominator;
+    }
+
+
+    function setExchangeRate(uint newExchangeRate) external onlyOwner {
+        exchangeRate = newExchangeRate;
+    }
+
+
+    function version() public pure returns (uint32){
         // 000.000.000 - Major.minor.internal
         return 2000005;
     }
 
 
-    function setVerifier(address _verifier) external onlyOwner{
+    function setVerifier(address _verifier) external onlyOwner {
         pureFiVerifier = _verifier;
     }
 
@@ -33,7 +46,6 @@ contract UFIBuyerMumbaiKYC1 is PureFiContext, OwnableUpgradeable, ReentrancyGuar
     function setRuleId(uint _ruleId) external onlyOwner {
         ruleID = _ruleId;
     }
-
 
     /**
     * buys UFI tokens for the full amount of _value provided.
@@ -49,8 +61,7 @@ contract UFIBuyerMumbaiKYC1 is PureFiContext, OwnableUpgradeable, ReentrancyGuar
 
     function _buy(address _to) internal returns (uint256){
         require(msg.value >= 1e16, "UFIBuyerMumbaiKYC2:value less than 0.01");
-        //Dima: fixed exchange rate 0.01 MATIC == 1 UFI
-        uint tokensSent = msg.value * 100;
+        uint tokensSent = (msg.value * exchangeRate) / denominator;
         ufi.transfer(_to, tokensSent);
         return tokensSent;
     }
