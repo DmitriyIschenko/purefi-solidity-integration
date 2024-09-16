@@ -3,8 +3,8 @@ import {ethers} from "ethers";
 import {ProxyAdmin__factory} from "../typechain-types";
 
 const deployer = new ethers.Wallet(process.env.PRIVATE_KEY as string, hardhat.provider);
-const verifierAddress = "0x33962E4b101dd947ef35200c151B0fa56Fb6670E";
-const tokenAddress = "0xa784295ec77D69917bCFa97200897393e04e1c65";
+let verifierAddress = "0x33962E4b101dd947ef35200c151B0fa56Fb6670E";
+let tokenAddress = "0xa784295ec77D69917bCFa97200897393e04e1c65";
 
 async function deployInfrastructure(wallet: ethers.Wallet) {
 
@@ -127,12 +127,48 @@ async function foo() {
     const upgradeTrans2 = await upgrade(proxyAdminAddress, KYC2ProxyAddress, KYC2BuyerImplementation.address, deployer);
 }
 
+
+async function upgradeKYC1(wallet: ethers.Wallet, proxyAdminAddress: string, proxyAddress: string) {
+    const KYC1NewImpl = await (await (await hardhat.getContractFactory("UFIBuyerKYC1")).connect(wallet).deploy()).deployed();
+    console.log("Kyc1Impl deployed to", KYC1NewImpl.address);
+    await upgrade(proxyAdminAddress, proxyAddress, KYC1NewImpl.address, wallet);
+}
+
+async function upgradeKYC2(wallet: ethers.Wallet, proxyAdminAddress: string, proxyAddress: string) {
+    const KYC2NewImpl = await (await (await hardhat.getContractFactory("UFIBuyerKYC2")).connect(wallet).deploy()).deployed();
+    console.log("Kyc2Impl deployed to", KYC2NewImpl.address);
+    await upgrade(proxyAdminAddress, proxyAddress, KYC2NewImpl.address, wallet);
+}
+
+async function upgradeNoKYC(wallet: ethers.Wallet, proxyAdminAddress: string, proxyAddress: string) {
+    const NoKYCNewImpl = await (await (await hardhat.getContractFactory("UFIBuyerNoKYC")).connect(wallet).deploy()).deployed();
+    console.log("NoKYCNewImpl deployed to", NoKYCNewImpl.address);
+    await upgrade(proxyAdminAddress, proxyAddress, NoKYCNewImpl.address, wallet);
+}
+
 async function main() {
-    await deployInfrastructure(deployer);
-    await deployNoKYC("0x4cDD791Cab032C3294FA5Dd2C60DeC1b7a213cdd", deployer);
+    const deployer = new ethers.Wallet(process.env.PRIVATE_KEY as string, hardhat.provider);
+    const tokenFactory = await hardhat.getContractFactory("ERC20PresetMinterPauserUpgradeable");
 
+    if (network.name === "optest") {
+        verifierAddress = "0x33962E4b101dd947ef35200c151B0fa56Fb6670E";
+        tokenAddress = "0xa784295ec77D69917bCFa97200897393e04e1c65";
+    }
+    if (network.name === "fuji") {
+        verifierAddress = "0x5BeF14365342f88056430da075F613c5545A0Ce9";
+        tokenAddress = "0xa784295ec77D69917bCFa97200897393e04e1c65";
+    }
 
+    const token = tokenFactory.attach(tokenAddress);
 
+    const kyc = await deployInfrastructure(deployer);
+
+    const noKyc = await deployNoKYC("0x277B58288450aef72DfC889Ed2008656E077dD2A", deployer);
+
+    await (await token.connect(deployer).mint(deployer.address, 1000000000n * (10n ** 6n))).wait();
+    await (await token.connect(deployer).mint(noKyc.UFIBuyerNoKYC.address, 1000000000n * (10n ** 6n))).wait();
+    await (await token.connect(deployer).mint(kyc.KYC1BuyerProxy.address, 1000000000n * (10n ** 6n))).wait();
+    await (await token.connect(deployer).mint(kyc.KYC2BuyerProxy.address, 1000000000n * (10n ** 6n))).wait();
 }
 
 // We recommend this pattern to be able to use async/await everywhere

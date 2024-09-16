@@ -14,6 +14,11 @@ const config: HardhatUserConfig = {
         }
     },
     networks: {
+        hardhat: {
+            forking: {
+                url: "https://sepolia-rollup.arbitrum.io/rpc"
+            }
+        },
         mumbai: {
             url: (process.env.POLYGON_TESTNET as string),
         },
@@ -22,6 +27,18 @@ const config: HardhatUserConfig = {
         },
         tbsc: {
             url: "https://data-seed-prebsc-2-s2.bnbchain.org:8545"
+        },
+        arbitrumSepolia: {
+            url: "https://sepolia-rollup.arbitrum.io/rpc"
+        },
+        optest: {
+            url: "https://sepolia.optimism.io"
+        },
+        amoy: {
+            url: "https://rpc-amoy.polygon.technology"
+        },
+        fuji: {
+            url: "https://api.avax-test.network/ext/bc/C/rpc"
         }
     }
 };

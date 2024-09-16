@@ -12,6 +12,7 @@ contract UFIBuyerKYC1 is PureFiContext, OwnableUpgradeable, ReentrancyGuard {
     uint public exchangeRate;
     uint public denominator;
 
+    event DemoPurchase(address recepient, uint256 ethAmount, uint256 ufiAmount);
 
     function initialize(address token, address verifier) external initializer {
         ufi = ERC20Upgradeable(token);
@@ -63,6 +64,7 @@ contract UFIBuyerKYC1 is PureFiContext, OwnableUpgradeable, ReentrancyGuard {
         require(msg.value >= 1e16, "UFIBuyerMumbaiKYC2:value less than 0.01");
         uint tokensSent = (msg.value * exchangeRate) / denominator;
         ufi.transfer(_to, tokensSent);
+        emit DemoPurchase(_to, msg.value, tokensSent);
         return tokensSent;
     }
 }
