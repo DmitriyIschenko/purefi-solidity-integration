@@ -35,13 +35,18 @@ const config: HardhatUserConfig = {
         optest: {
             url: "https://sepolia.optimism.io"
         },
-        amoy: {
+        polygonAmoy: {
             url: "https://rpc.ankr.com/polygon_amoy",
             accounts: [process.env.PRIVATE_KEY as string]
         },
         fuji: {
             url: "https://api.avax-test.network/ext/bc/C/rpc"
         }
+    },
+    etherscan: {
+        apiKey: {
+            polygonAmoy: process.env.ETHERSCAN_API_AMOY as string
+        },
     }
 };
 
