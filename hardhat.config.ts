@@ -16,8 +16,9 @@ const config: HardhatUserConfig = {
     networks: {
         hardhat: {
             forking: {
-                url: "https://sepolia-rollup.arbitrum.io/rpc"
-            }
+                url: "https://rpc.ankr.com/polygon_amoy"
+            },
+            accounts: [{privateKey: process.env.PRIVATE_KEY as string, balance: "10000000000000000000"}]
         },
         mumbai: {
             url: (process.env.POLYGON_TESTNET as string),
@@ -35,7 +36,8 @@ const config: HardhatUserConfig = {
             url: "https://sepolia.optimism.io"
         },
         amoy: {
-            url: "https://rpc-amoy.polygon.technology"
+            url: "https://rpc.ankr.com/polygon_amoy",
+            accounts: [process.env.PRIVATE_KEY as string]
         },
         fuji: {
             url: "https://api.avax-test.network/ext/bc/C/rpc"

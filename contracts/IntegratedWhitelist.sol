@@ -4,8 +4,10 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgrad
 import "./PureFi/PureFiContext.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/presets/ERC20PresetMinterPauserUpgradeable.sol";
 
-
-contract IntegratedWhitelist is PureFiContext, AccessControlEnumerableUpgradeable {
+contract IntegratedWhitelist is
+    PureFiContext,
+    AccessControlEnumerableUpgradeable
+{
     bytes32 public WHITELIST_ROLE;
 
     function initialize() public initializer {
@@ -16,20 +18,27 @@ contract IntegratedWhitelist is PureFiContext, AccessControlEnumerableUpgradeabl
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
     }
 
-
-    function version() public pure returns (uint32){
+    function version() public pure returns (uint32) {
         // 000.000.000 - Major.minor.internal
         return 1000001;
     }
 
-
-    function setVerifier(address _verifier) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setVerifier(
+        address _verifier
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         pureFiVerifier = _verifier;
     }
 
-
-    function whitelistForWithKYCPurefi2(bytes calldata _purefidata) external
-    withDefaultAddressVerification(DefaultRule.KYC, _msgSender(), _purefidata) {
+    function whitelistForWithKYCPurefi2(
+        bytes calldata _purefidata
+    )
+        external
+        withDefaultAddressVerification(
+            DefaultRule.KYC,
+            _msgSender(),
+            _purefidata
+        )
+    {
         _grantRole(WHITELIST_ROLE, _msgSender());
     }
 }

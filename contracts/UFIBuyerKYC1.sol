@@ -5,7 +5,6 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "./PureFi/PureFiContext.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-
 contract UFIBuyerKYC1 is PureFiContext, OwnableUpgradeable, ReentrancyGuard {
     ERC20Upgradeable public ufi;
     uint public ruleID;
@@ -22,27 +21,22 @@ contract UFIBuyerKYC1 is PureFiContext, OwnableUpgradeable, ReentrancyGuard {
         denominator = 1_000_0;
     }
 
-
     function setDenominator(uint newDenominator) external onlyOwner {
         denominator = newDenominator;
     }
-
 
     function setExchangeRate(uint newExchangeRate) external onlyOwner {
         exchangeRate = newExchangeRate;
     }
 
-
-    function version() public pure returns (uint32){
+    function version() public pure returns (uint32) {
         // 000.000.000 - Major.minor.internal
         return 2000005;
     }
 
-
     function setVerifier(address _verifier) external onlyOwner {
         pureFiVerifier = _verifier;
     }
-
 
     function setRuleId(uint _ruleId) external onlyOwner {
         ruleID = _ruleId;
@@ -53,14 +47,19 @@ contract UFIBuyerKYC1 is PureFiContext, OwnableUpgradeable, ReentrancyGuard {
     * @param _to - address to send bought tokens to
    @param _purefidata -  a signed data package from the PureFi Issuer
     */
-    function buyForWithKYCPurefi1(address _to,
+    function buyForWithKYCPurefi1(
+        address _to,
         bytes calldata _purefidata
-    ) external payable nonReentrant withCustomAddressVerification (ruleID, msg.sender, _purefidata) {
+    )
+        external
+        payable
+        nonReentrant
+        withCustomAddressVerification(ruleID, msg.sender, _purefidata)
+    {
         _buy(_to);
     }
 
-
-    function _buy(address _to) internal returns (uint256){
+    function _buy(address _to) internal returns (uint256) {
         require(msg.value >= 1e16, "UFIBuyerMumbaiKYC2:value less than 0.01");
         uint tokensSent = (msg.value * exchangeRate) / denominator;
         ufi.transfer(_to, tokensSent);
