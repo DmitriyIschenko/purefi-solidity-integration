@@ -1,22 +1,12 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.10;
 
-pragma solidity ^0.8.0;
+struct PureFiData {
+    uint64 timestamp;
+    bytes signature;
+    bytes package;
+}
 
- struct VerificationPackage{
-        uint8 packagetype;
-        uint256 session;
-        uint256 rule;
-        address from;
-        address to;
-        address token;
-        uint256 amount;
-        bytes payload;
-    }
-
-interface IPureFiVerifier{
-    function validateAndDecode(bytes memory _purefidata) external returns (VerificationPackage memory);
-
-    function validatePureFiData(bytes memory _purefidata) external returns (bytes memory, uint16);
-
-    function decodePureFiPackage(bytes memory _purefipackage) external view returns (VerificationPackage memory);
+interface IPureFiVerifier {
+    function validatePayload(bytes calldata payload) external;
 }
