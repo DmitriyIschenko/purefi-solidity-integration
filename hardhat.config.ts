@@ -5,11 +5,11 @@ require('dotenv').config();
 
 const config: HardhatUserConfig = {
     solidity: {
-        version: "0.8.19",
+        version: "0.8.28",
         settings: {
             optimizer: {
                 enabled: true,
-                runs: 200
+                runs: 1000
             }
         }
     },
@@ -19,6 +19,10 @@ const config: HardhatUserConfig = {
                 url: "https://rpc.ankr.com/polygon_amoy"
             },
             accounts: [{privateKey: process.env.PRIVATE_KEY as string, balance: "10000000000000000000"}]
+        },
+        sepolia: {
+            url: process.env.SEPOLIA as string,
+            accounts: [process.env.PRIVATE_KEY as string]
         },
         mumbai: {
             url: (process.env.POLYGON_TESTNET as string),
@@ -45,8 +49,19 @@ const config: HardhatUserConfig = {
     },
     etherscan: {
         apiKey: {
-            polygonAmoy: process.env.ETHERSCAN_API_AMOY as string
+            polygonAmoy: process.env.ETHERSCAN_API_AMOY as string,
+            sepolia: process.env.ETHERSCAN_API_SEPOLIA as string
         },
+        customChains: [
+            {
+                network: "sepolia",
+                chainId: 11155111,
+                urls: {
+                    apiURL: "https://api-sepolia.etherscan.io/api",
+                    browserURL: "https://sepolia.etherscan.io/"
+                }
+            }
+        ]
     }
 };
 

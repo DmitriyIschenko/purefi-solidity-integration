@@ -2,10 +2,9 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import {IPureFiVerifier} from "./PureFi/interfaces/IPureFiVerifier.sol";
 
-contract UFIBuyerKYC1 is OwnableUpgradeable, ReentrancyGuard {
+contract UFIBuyerKYC1 is OwnableUpgradeable {
     ERC20Upgradeable public ufi;
     uint public ruleID;
     uint public exchangeRate;
@@ -16,7 +15,7 @@ contract UFIBuyerKYC1 is OwnableUpgradeable, ReentrancyGuard {
 
     function initialize(address token, address _verifier) external initializer {
         ufi = ERC20Upgradeable(token);
-        __Ownable_init();
+        __Ownable_init_unchained(msg.sender);
         exchangeRate = 1_000_000;
         denominator = 1_000_0;
         verifier = IPureFiVerifier(_verifier);
@@ -55,14 +54,13 @@ contract UFIBuyerKYC1 is OwnableUpgradeable, ReentrancyGuard {
     )
     external
     payable
-    nonReentrant
+
     {
         verifier.validatePayload(_purefidata);
         _buy(_to);
     }
 
     function _buy(address _to) internal returns (uint256) {
-        require(msg.value >= 1e16, "UFIBuyerMumbaiKYC2:value less than 0.01");
         uint tokensSent = (msg.value * exchangeRate) / denominator;
         ufi.transfer(_to, tokensSent);
         emit DemoPurchase(_to, msg.value, tokensSent);
